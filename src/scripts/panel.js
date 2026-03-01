@@ -115,12 +115,20 @@ function clearAutoDismiss() {
 // ===========================
 async function applyFix() {
     if (!currentResult) return;
-    try {
-        await invoke('apply_correction_text', { text: currentResult.corrected_text });
-    } catch (e) {
-        console.error('Apply fix error:', e);
-    }
+    
+    const textToApply = currentResult.corrected_text;
+    
+    // Close panel first to restore focus to the target application
     closePanel();
+    
+    // Wait for the panel to hide and focus to return before sending paste command
+    setTimeout(async () => {
+        try {
+            await invoke('apply_correction_text', { text: textToApply });
+        } catch (e) {
+            console.error('Apply fix error:', e);
+        }
+    }, 150);
 }
 
 async function copyText() {
