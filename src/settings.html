@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GrammarLens Settings</title>
+    <link rel="stylesheet" href="styles/shared.css" />
+    <link rel="stylesheet" href="styles/settings.css" />
+</head>
+
+<body>
+    <div class="settings-container" id="settings-container">
+        <h1 class="settings-header">Settings</h1>
+
+        <!-- API Configuration -->
+        <div class="settings-section">
+            <div class="section-title">API Configuration</div>
+            <div class="section-card">
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <span class="setting-label">Gemini API Key</span>
+                        <span class="setting-description">Required to use grammar correction. Get a free key from Google
+                            AI Studio.</span>
+                    </div>
+                </div>
+                <div class="api-key-field" style="margin-top: 8px;">
+                    <input type="password" class="input" id="api-key-input" placeholder="Enter your Gemini API key..."
+                        spellcheck="false" />
+                    <button class="api-key-toggle" id="api-key-toggle" title="Show/hide API key">👁</button>
+                </div>
+                <div class="api-key-status" id="api-key-status"></div>
+            </div>
+        </div>
+
+        <!-- Correction Behavior -->
+        <div class="settings-section">
+            <div class="section-title">Correction Behavior</div>
+            <div class="section-card">
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <span class="setting-label">Keyboard Shortcut</span>
+                        <span class="setting-description">Trigger grammar check from any application</span>
+                    </div>
+                    <div class="setting-control">
+                        <span class="shortcut-display" id="shortcut-display">Ctrl + Alt + G</span>
+                    </div>
+                </div>
+
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <span class="setting-label">Learn Mode</span>
+                        <span class="setting-description">Show explanations instead of auto-pasting corrections</span>
+                    </div>
+                    <div class="setting-control">
+                        <label class="toggle-switch" id="learn-mode-toggle">
+                            <input type="checkbox" id="learn-mode-input" />
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <span class="setting-label">Auto-apply Corrections</span>
+                        <span class="setting-description">Automatically paste corrected text when Learn Mode is
+                            off</span>
+                    </div>
+                    <div class="setting-control">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="auto-apply-input" />
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <span class="setting-label">Correction Strictness</span>
+                        <span class="setting-description">How aggressively to correct text</span>
+                    </div>
+                    <div class="setting-control">
+                        <select class="select" id="strictness-select">
+                            <option value="relaxed">Relaxed</option>
+                            <option value="balanced">Balanced</option>
+                            <option value="strict">Strict</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Appearance -->
+        <div class="settings-section">
+            <div class="section-title">Appearance</div>
+            <div class="section-card">
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <span class="setting-label">Show Floating Icon</span>
+                        <span class="setting-description">Display a small icon near the cursor when text is
+                            selected</span>
+                    </div>
+                    <div class="setting-control">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="floating-icon-input" />
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <span class="setting-label">Theme</span>
+                        <span class="setting-description">Choose your preferred color scheme</span>
+                    </div>
+                    <div class="setting-control">
+                        <select class="select" id="theme-select">
+                            <option value="system">System</option>
+                            <option value="light">Light</option>
+                            <option value="dark">Dark</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <span class="setting-label">Toast Duration</span>
+                        <span class="setting-description">How long notifications stay visible</span>
+                    </div>
+                    <div class="setting-control">
+                        <div class="slider-group">
+                            <input type="range" class="slider" id="toast-duration-slider" min="1" max="10" step="1"
+                                value="3" />
+                            <span class="slider-value" id="toast-duration-value">3s</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Startup -->
+        <div class="settings-section">
+            <div class="section-title">System</div>
+            <div class="section-card">
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <span class="setting-label">Launch on Startup</span>
+                        <span class="setting-description">Start GrammarLens when Windows starts</span>
+                    </div>
+                    <div class="setting-control">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="startup-input" />
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Disabled Apps -->
+        <div class="settings-section">
+            <div class="section-title">Disabled Apps</div>
+            <div class="section-card">
+                <div class="setting-description" style="padding: 4px 0 8px;">
+                    GrammarLens will not activate in these applications.
+                </div>
+                <div class="disabled-apps-list" id="disabled-apps-list">
+                    <!-- Populated dynamically -->
+                </div>
+                <div class="add-app-row">
+                    <input type="text" class="input" id="add-app-input" placeholder="Process name (e.g., code.exe)"
+                        spellcheck="false" />
+                    <button class="btn" id="add-app-btn">Add</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Save indicator -->
+    <div class="save-indicator" id="save-indicator">
+        ✓ Settings saved
+    </div>
+
+    <script src="scripts/settings.js"></script>
+</body>
+
+</html>

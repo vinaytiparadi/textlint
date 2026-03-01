@@ -1,0 +1,40 @@
+[package]
+name = "grammarlens"
+version = "0.1.0"
+description = "An OS-wide, AI-powered grammar correction tool for Windows 11"
+authors = ["GrammarLens"]
+edition = "2021"
+
+[lib]
+name = "grammarlens_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = ["tray-icon"] }
+tauri-plugin-global-shortcut = "2"
+tauri-plugin-autostart = "2"
+tauri-plugin-store = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+reqwest = { version = "0.12", features = ["json", "rustls-tls"] }
+arboard = "3"
+enigo = { version = "0.3", features = [] }
+tokio = { version = "1", features = ["full"] }
+log = "0.4"
+
+[target.'cfg(windows)'.dependencies]
+windows = { version = "0.58", features = [
+    "Win32_UI_WindowsAndMessaging",
+    "Win32_System_Threading",
+    "Win32_Foundation",
+    "Win32_UI_Accessibility",
+    "Win32_System_Com",
+] }
+
+[profile.release]
+strip = true
+lto = true
+codegen-units = 1

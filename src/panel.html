@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GrammarLens</title>
+    <link rel="stylesheet" href="styles/shared.css" />
+    <link rel="stylesheet" href="styles/panel.css" />
+</head>
+
+<body>
+    <div class="correction-panel" id="correction-panel">
+        <div class="panel-header" id="panel-header" data-tauri-drag-region>
+            <div class="panel-title">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--color-accent)">
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
+                </svg>
+                <span id="panel-title-text">GrammarLens</span>
+            </div>
+            <button class="panel-close" id="panel-close" title="Close (Esc)">✕</button>
+        </div>
+
+        <!-- Info / Status view (no changes, errors) -->
+        <div class="panel-info hidden" id="panel-info">
+            <span class="info-icon success" id="info-icon">✓</span>
+            <div class="info-text">
+                <div class="info-message" id="info-message">Looks good!</div>
+                <div class="info-subtitle" id="info-subtitle">No changes needed.</div>
+            </div>
+        </div>
+
+        <!-- Corrections view -->
+        <div class="panel-content hidden" id="panel-corrections">
+            <div class="text-section">
+                <div class="text-label">Original</div>
+                <div class="text-content" id="original-text"></div>
+            </div>
+            <div class="text-section">
+                <div class="text-label">Corrected</div>
+                <div class="text-content corrected" id="corrected-text"></div>
+            </div>
+            <div id="corrections-list"></div>
+        </div>
+
+        <div class="panel-footer hidden" id="panel-actions">
+            <button class="btn btn-accent" id="apply-btn">✓ Apply</button>
+            <button class="btn" id="copy-btn">Copy</button>
+            <button class="btn" id="dismiss-btn">Dismiss</button>
+        </div>
+    </div>
+
+    <script src="scripts/panel.js"></script>
+</body>
+
+</html>

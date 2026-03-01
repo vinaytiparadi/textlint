@@ -1,0 +1,203 @@
+/* Settings Page Styles */
+
+.settings-container {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: var(--space-6);
+    overflow-y: auto;
+    height: 100vh;
+}
+
+.settings-header {
+    font-size: var(--font-size-display);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-8);
+}
+
+.settings-section {
+    margin-bottom: var(--space-6);
+    animation: slideUp var(--transition-slow) both;
+}
+
+.settings-section:nth-child(2) {
+    animation-delay: 50ms;
+}
+
+.settings-section:nth-child(3) {
+    animation-delay: 100ms;
+}
+
+.settings-section:nth-child(4) {
+    animation-delay: 150ms;
+}
+
+.settings-section:nth-child(5) {
+    animation-delay: 200ms;
+}
+
+.settings-section:nth-child(6) {
+    animation-delay: 250ms;
+}
+
+.section-title {
+    font-size: var(--font-size-body-large);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-2);
+}
+
+.section-card {
+    background: var(--color-bg-card);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+    padding: var(--space-2) var(--space-4);
+    box-shadow: var(--shadow-sm);
+}
+
+/* API key specific */
+.api-key-field {
+    position: relative;
+    display: flex;
+    gap: var(--space-2);
+}
+
+.api-key-field .input {
+    flex: 1;
+    font-family: monospace;
+    letter-spacing: 1px;
+}
+
+.api-key-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    color: var(--color-text-secondary);
+    font-size: 14px;
+    transition: background var(--transition-fast);
+}
+
+.api-key-toggle:hover {
+    background: var(--color-bg-card-hover);
+}
+
+.api-key-status {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-top: var(--space-2);
+    font-size: var(--font-size-caption);
+}
+
+.api-key-status.valid {
+    color: var(--color-success);
+}
+
+.api-key-status.invalid {
+    color: var(--color-error);
+}
+
+/* Select control sizing */
+.setting-control .select {
+    width: 160px;
+}
+
+/* Slider with value */
+.slider-group {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    width: 160px;
+}
+
+.slider-group .slider {
+    flex: 1;
+}
+
+.slider-value {
+    font-size: var(--font-size-body);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-secondary);
+    min-width: 24px;
+    text-align: right;
+}
+
+/* Disabled Apps Section */
+.disabled-apps-list {
+    max-height: 200px;
+    overflow-y: auto;
+    margin-top: var(--space-2);
+}
+
+.app-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-2) 0;
+    border-bottom: 1px solid var(--color-divider);
+}
+
+.app-item:last-child {
+    border-bottom: none;
+}
+
+.app-name {
+    font-size: var(--font-size-body);
+    color: var(--color-text-primary);
+    font-family: monospace;
+}
+
+.add-app-row {
+    display: flex;
+    gap: var(--space-2);
+    margin-top: var(--space-3);
+}
+
+.add-app-row .input {
+    flex: 1;
+}
+
+/* Shortcut display */
+.shortcut-display {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-1) var(--space-3);
+    background: var(--color-bg-input);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-sm);
+    font-family: monospace;
+    font-size: var(--font-size-body);
+    color: var(--color-text-secondary);
+    min-height: 32px;
+}
+
+/* Save indicator */
+.save-indicator {
+    position: fixed;
+    bottom: var(--space-4);
+    right: var(--space-4);
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    background: var(--color-success-bg);
+    color: var(--color-success);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-caption);
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity var(--transition-normal), transform var(--transition-normal);
+    pointer-events: none;
+}
+
+.save-indicator.visible {
+    opacity: 1;
+    transform: translateY(0);
+}

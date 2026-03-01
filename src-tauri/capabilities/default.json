@@ -1,0 +1,38 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Capability for the main window",
+  "windows": [
+    "main",
+    "settings",
+    "toast",
+    "panel"
+  ],
+  "permissions": [
+    "core:default",
+    "global-shortcut:allow-register",
+    "global-shortcut:allow-unregister",
+    "global-shortcut:allow-is-registered",
+    "autostart:allow-enable",
+    "autostart:allow-disable",
+    "autostart:allow-is-enabled",
+    "store:allow-get",
+    "store:allow-set",
+    "store:allow-save",
+    "store:allow-load",
+    "store:allow-clear",
+    "core:window:allow-create",
+    "core:window:allow-close",
+    "core:window:allow-show",
+    "core:window:allow-hide",
+    "core:window:allow-set-size",
+    "core:window:allow-set-position",
+    "core:window:allow-set-focus",
+    "core:window:allow-set-always-on-top",
+    "core:window:allow-start-dragging",
+    "core:window:allow-center",
+    "core:event:default",
+    "core:event:allow-emit",
+    "core:event:allow-listen"
+  ]
+}
