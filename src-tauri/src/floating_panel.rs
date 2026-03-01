@@ -104,7 +104,7 @@ pub async fn show_panel_at_cursor(
     let position = calculate_panel_position(&cursor, PANEL_WIDTH, PANEL_HEIGHT);
 
     println!(
-        "[GrammarLens] Panel position: cursor=({},{}) panel=({},{})",
+        "[TextLint] Panel position: cursor=({},{}) panel=({},{})",
         cursor.x, cursor.y, position.x, position.y
     );
 

@@ -1,4 +1,4 @@
-// GrammarLens Toast Notification Script
+// TextLint Toast Notification Script
 // Displays non-intrusive toast notifications for correction results
 
 const { listen } = window.__TAURI__.event;

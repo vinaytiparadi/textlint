@@ -1,4 +1,4 @@
-// GrammarLens Correction Panel
+// TextLint Correction Panel
 // Handles all feedback: corrections, "no changes", and errors
 // Data injected via window.showCorrections() / window.showInfo() / window.showError() from Rust
 
@@ -72,7 +72,7 @@ window.showInfo = function (message, subtitle) {
     document.getElementById('panel-info').classList.remove('hidden');
     document.getElementById('panel-actions').classList.add('hidden');
 
-    document.getElementById('panel-title-text').textContent = 'GrammarLens';
+    document.getElementById('panel-title-text').textContent = 'TextLint';
     document.getElementById('info-icon').textContent = '✓';
     document.getElementById('info-icon').className = 'info-icon success';
     document.getElementById('info-message').textContent = message;

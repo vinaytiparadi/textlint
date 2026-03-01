@@ -28,7 +28,7 @@ pub fn run() {
             tauri_plugin_global_shortcut::Builder::new()
                 .with_handler(move |app, _shortcut, event| {
                     if event.state() == ShortcutState::Pressed {
-                        println!("[GrammarLens] Shortcut triggered!");
+                        println!("[TextLint] Shortcut triggered!");
                         let app_handle = app.clone();
                         tauri::async_runtime::spawn(async move {
                             shortcuts::handle_correction_trigger(&app_handle).await;
@@ -41,7 +41,7 @@ pub fn run() {
             // Load settings
             let settings = load_settings(&app.handle());
             println!(
-                "[GrammarLens] Settings loaded. API key set: {}",
+                "[TextLint] Settings loaded. API key set: {}",
                 !settings.api_key.is_empty()
             );
 
@@ -58,14 +58,14 @@ pub fn run() {
                 .unwrap_or_else(|_| "CmdOrCtrl+Alt+G".parse().unwrap());
             app.global_shortcut().register(shortcut)?;
             println!(
-                "[GrammarLens] Global shortcut registered: {}",
+                "[TextLint] Global shortcut registered: {}",
                 settings.shortcut
             );
 
             // Create the panel window (hidden initially)
             create_panel_window(app)?;
 
-            println!("[GrammarLens] App started successfully. Waiting in system tray...");
+            println!("[TextLint] App started successfully. Waiting in system tray...");
 
             Ok(())
         })
@@ -94,7 +94,7 @@ fn setup_tray(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
             .build(app)?
     };
     let separator = tauri::menu::PredefinedMenuItem::separator(app)?;
-    let quit_item = MenuItemBuilder::with_id("quit", "Quit GrammarLens").build(app)?;
+    let quit_item = MenuItemBuilder::with_id("quit", "Quit TextLint").build(app)?;
 
     let menu = MenuBuilder::new(app)
         .items(&[&settings_item, &learn_mode_item, &separator, &quit_item])
@@ -102,7 +102,7 @@ fn setup_tray(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
 
     let _tray = TrayIconBuilder::new()
         .icon(app.default_window_icon().unwrap().clone())
-        .tooltip("GrammarLens - Grammar Correction")
+        .tooltip("TextLint - Grammar Correction")
         .menu(&menu)
         .on_menu_event(move |app, event| match event.id().as_ref() {
             "settings" => {
@@ -134,7 +134,7 @@ fn open_settings_window(app: &tauri::AppHandle) {
         "settings",
         tauri::WebviewUrl::App("settings.html".into()),
     )
-    .title("GrammarLens Settings")
+    .title("TextLint Settings")
     .inner_size(660.0, 720.0)
     .resizable(true)
     .center()
@@ -155,7 +155,7 @@ fn toggle_learn_mode(app: &tauri::AppHandle) {
 
     // Notify frontend
     let _ = app.emit("learn-mode-changed", new_value);
-    println!("[GrammarLens] Learn Mode toggled: {}", new_value);
+    println!("[TextLint] Learn Mode toggled: {}", new_value);
 }
 
 /// Create the floating panel window (hidden initially)

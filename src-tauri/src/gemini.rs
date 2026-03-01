@@ -29,7 +29,7 @@ fn build_system_prompt(strictness: &Strictness) -> String {
     };
 
     format!(
-        r#"You are GrammarLens, an English grammar correction assistant designed to help non-native English speakers improve their writing. Your corrections should be:
+        r#"You are TextLint, an English grammar correction assistant designed to help non-native English speakers improve their writing. Your corrections should be:
 
 1. Accurate — only fix actual errors, don't change correct text.
 2. Minimal — preserve the user's voice and intent. Don't rewrite sentences unnecessarily.

@@ -1295,25 +1295,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "grammarlens"
-version = "0.1.0"
-dependencies = [
- "arboard",
- "enigo",
- "log",
- "reqwest 0.12.28",
- "serde",
- "serde_json",
- "tauri",
- "tauri-build",
- "tauri-plugin-autostart",
- "tauri-plugin-global-shortcut",
- "tauri-plugin-store",
- "tokio",
- "windows 0.58.0",
-]
-
-[[package]]
 name = "gtk"
 version = "0.18.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4258,6 +4239,25 @@ dependencies = [
  "futf",
  "mac",
  "utf-8",
+]
+
+[[package]]
+name = "textlint"
+version = "0.1.0"
+dependencies = [
+ "arboard",
+ "enigo",
+ "log",
+ "reqwest 0.12.28",
+ "serde",
+ "serde_json",
+ "tauri",
+ "tauri-build",
+ "tauri-plugin-autostart",
+ "tauri-plugin-global-shortcut",
+ "tauri-plugin-store",
+ "tokio",
+ "windows 0.58.0",
 ]
 
 [[package]]

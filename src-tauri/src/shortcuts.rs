@@ -9,11 +9,11 @@ use tauri::{AppHandle, Manager};
 /// The main correction handler — called when the global shortcut is triggered.
 /// Orchestrates: check disabled app → capture text → call API → handle result.
 pub async fn handle_correction_trigger(app: &AppHandle) {
-    println!("[GrammarLens] Correction trigger started...");
+    println!("[TextLint] Correction trigger started...");
 
     // IMMEDIATELY capture cursor position before anything else
     let cursor_position = floating_panel::get_cursor_position();
-    println!("[GrammarLens] Cursor captured at: {:?}", cursor_position);
+    println!("[TextLint] Cursor captured at: {:?}", cursor_position);
 
     // Read current settings
     let (api_key, strictness, learn_mode, auto_apply, disabled_apps) = {
@@ -30,26 +30,26 @@ pub async fn handle_correction_trigger(app: &AppHandle) {
 
     // Check if API key is set
     if api_key.is_empty() {
-        println!("[GrammarLens] ERROR: No API key configured!");
+        println!("[TextLint] ERROR: No API key configured!");
         show_error(app, "API key not configured. Right-click the tray icon → Settings to add your Gemini API key.", &cursor_position);
         return;
     }
 
     // Check if current app is disabled
     if app_filter::is_app_disabled(&disabled_apps) {
-        println!("[GrammarLens] Skipped: foreground app is in disabled list");
+        println!("[TextLint] Skipped: foreground app is in disabled list");
         return;
     }
 
     let foreground = app_filter::get_foreground_app().unwrap_or_default();
-    println!("[GrammarLens] Foreground app: {}", foreground);
+    println!("[TextLint] Foreground app: {}", foreground);
 
     // Capture selected text via clipboard
-    println!("[GrammarLens] Capturing selected text...");
+    println!("[TextLint] Capturing selected text...");
     let (selected_text, original_clipboard) = match clipboard::capture_selected_text() {
         Ok(result) => result,
         Err(e) => {
-            println!("[GrammarLens] ERROR: Failed to capture text: {}", e);
+            println!("[TextLint] ERROR: Failed to capture text: {}", e);
             show_error(
                 app,
                 &format!("Failed to capture text: {}", e),
@@ -60,7 +60,7 @@ pub async fn handle_correction_trigger(app: &AppHandle) {
     };
 
     println!(
-        "[GrammarLens] Captured text ({} chars): \"{}\"",
+        "[TextLint] Captured text ({} chars): \"{}\"",
         selected_text.len(),
         if selected_text.len() > 80 {
             &selected_text[..80]
@@ -70,17 +70,17 @@ pub async fn handle_correction_trigger(app: &AppHandle) {
     );
 
     // Call Gemini API
-    println!("[GrammarLens] Calling Gemini API...");
+    println!("[TextLint] Calling Gemini API...");
     let response = match gemini::check_grammar(&api_key, &selected_text, &strictness).await {
         Ok(resp) => {
             println!(
-                "[GrammarLens] API response received. Has changes: {}",
+                "[TextLint] API response received. Has changes: {}",
                 resp.has_changes
             );
             resp
         }
         Err(e) => {
-            println!("[GrammarLens] ERROR: Gemini API error: {}", e);
+            println!("[TextLint] ERROR: Gemini API error: {}", e);
             clipboard::restore_clipboard(original_clipboard);
             show_error(app, &e, &cursor_position);
             return;
@@ -90,23 +90,23 @@ pub async fn handle_correction_trigger(app: &AppHandle) {
     let result = CorrectionResult::from_response(selected_text, response);
 
     if result.has_changes {
-        println!("[GrammarLens] {} corrections found", result.num_corrections);
+        println!("[TextLint] {} corrections found", result.num_corrections);
 
         if learn_mode {
             // In Learn Mode: show the panel instead of auto-pasting
-            println!("[GrammarLens] Learn Mode ON: showing panel");
+            println!("[TextLint] Learn Mode ON: showing panel");
             clipboard::restore_clipboard(original_clipboard);
             show_panel_with_result(app, &result, &cursor_position, true);
         } else if auto_apply {
             // Auto-apply: paste corrected text
-            println!("[GrammarLens] Auto-applying correction...");
+            println!("[TextLint] Auto-applying correction...");
             if let Err(e) = clipboard::apply_correction(&result.corrected_text, original_clipboard)
             {
-                println!("[GrammarLens] ERROR: Failed to apply correction: {}", e);
+                println!("[TextLint] ERROR: Failed to apply correction: {}", e);
                 show_error(app, &e, &cursor_position);
                 return;
             }
-            println!("[GrammarLens] Correction applied successfully");
+            println!("[TextLint] Correction applied successfully");
             // Just replaced the text, no explanation needed (Learn Mode OFF)
             show_info(
                 app,
@@ -125,7 +125,7 @@ pub async fn handle_correction_trigger(app: &AppHandle) {
         }
     } else {
         // No changes needed
-        println!("[GrammarLens] No corrections needed - text looks good!");
+        println!("[TextLint] No corrections needed - text looks good!");
         clipboard::restore_clipboard(original_clipboard);
         show_info(app, "Looks good!", "No changes needed.", &cursor_position);
     }
@@ -144,7 +144,7 @@ fn show_panel_with_result(
     let pos = floating_panel::calculate_panel_position(cursor_pos, 360, height);
 
     println!(
-        "[GrammarLens] Panel positioned at ({},{}) for cursor ({},{})",
+        "[TextLint] Panel positioned at ({},{}) for cursor ({},{})",
         pos.x, pos.y, cursor_pos.x, cursor_pos.y
     );
 
@@ -161,7 +161,7 @@ fn show_panel_with_result(
         if let Ok(json) = serde_json::to_string(result) {
             let js = format!("window.showCorrections({}, {})", json, learn_mode);
             let _ = panel_win.eval(&js);
-            println!("[GrammarLens] Panel data injected via eval");
+            println!("[TextLint] Panel data injected via eval");
         }
     }
 }

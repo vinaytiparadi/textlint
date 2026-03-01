@@ -1,4 +1,4 @@
-// GrammarLens Settings Script
+// TextLint Settings Script
 // Manages settings UI, auto-saves changes, communicates with Rust backend via Tauri IPC
 
 const { invoke } = window.__TAURI__.core;

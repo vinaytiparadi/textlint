@@ -1,10 +1,10 @@
 <div align="center">
 
-# 🔎 GrammarLens 🔎
+# 🔎 TextLint 🔎
 
 **An OS-wide, AI-powered grammar correction and English learning tool for Windows 11**
 
-![GrammarLens Banner](https://via.placeholder.com/800x200/222222/00A9FF?text=GrammarLens)
+![TextLint Banner](https://via.placeholder.com/800x200/222222/00A9FF?text=TextLint)
 
 </div>
 
@@ -14,7 +14,7 @@ Non-native English speakers and learners constantly write across dozens of apps 
 
 ## The Solution
 
-**GrammarLens** is a minimal, always-on Windows 11 desktop utility that lives in your system tray. Powered by Tauri v2 and the blazing-fast Gemini Flash API.
+**TextLint** is a minimal, always-on Windows 11 desktop utility that lives in your system tray. Powered by Tauri v2 and the blazing-fast Gemini Flash API.
 
 Wherever you're typing — any app, any text field — you can select text, hit a global shortcut (`Ctrl+Alt+G`), and instantly get:
 
@@ -28,7 +28,7 @@ Wherever you're typing — any app, any text field — you can select text, hit 
 - **🎯 Smart Positioning**: The correction panel magically appears right above your cursor.
 - **🧠 Learn Mode**: Don't just fix it—understand it. Get detailed explanations of your mistakes.
 - **🎨 Fluent Design**: Gorgeous native WinUI 3 aesthetics with light/dark theme support.
-- **🎛️ App Filtering**: Easily disable GrammarLens in specific apps (like VS Code or Terminal).
+- **🎛️ App Filtering**: Easily disable TextLint in specific apps (like VS Code or Terminal).
 - **🔒 Privacy First**: Lightweight, brings-your-own-API-key model.
 
 ## 🛠️ Stack
@@ -50,8 +50,8 @@ Wherever you're typing — any app, any text field — you can select text, hit 
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/grammarlens.git
-   cd grammarlens
+   git clone https://github.com/yourusername/textlint.git
+   cd textlint
    ```
 
 2. **Install frontend dependencies**
