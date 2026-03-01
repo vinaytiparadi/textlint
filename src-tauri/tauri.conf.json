@@ -18,11 +18,6 @@
         "skipTaskbar": true
       }
     ],
-    "trayIcon": {
-      "iconPath": "icons/icon.png",
-      "iconAsTemplate": false,
-      "tooltip": "TextLint - Grammar Correction"
-    },
     "security": {
       "csp": null
     }

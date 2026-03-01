@@ -13,7 +13,7 @@ use tauri::{
     tray::TrayIconBuilder,
     Emitter, Manager,
 };
-use tauri_plugin_autostart::MacosLauncher;
+use tauri_plugin_autostart::{MacosLauncher, ManagerExt};
 use tauri_plugin_global_shortcut::{GlobalShortcutExt, Shortcut, ShortcutState};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -38,6 +38,9 @@ pub fn run() {
                 .build(),
         )
         .setup(|app| {
+            // Enable auto-start on reboot
+            let _ = app.autolaunch().enable();
+
             // Load settings
             let settings = load_settings(&app.handle());
             println!(
