@@ -1,20 +1,12 @@
 <div align="center">
 
 # 🔎 TextLint 🔎
-
-**An OS-wide, AI-powered grammar correction and English learning tool for Windows 11**
-
-![TextLint Banner](https://via.placeholder.com/800x200/222222/00A9FF?text=TextLint)
-
+**An OS-wide, AI-powered writing assistant for Windows**
 </div>
 
-## The Problem
+## What is TextLint?
 
-Non-native English speakers and learners constantly write across dozens of apps — Slack, email, browser text fields, code editors, Word, Notion, and more. Existing grammar tools like Grammarly are either browser-only, subscription-heavy, or don't explain *why* something is wrong. There's no lightweight, system-wide tool that both fixes your writing and teaches you along the way.
-
-## The Solution
-
-**TextLint** is a minimal, always-on Windows 11 desktop utility that lives in your system tray. Powered by Tauri v2 and the blazing-fast Gemini Flash API.
+TextLint is a minimal, always-on Windows 11 desktop utility that lives in your system tray. Powered by Tauri v2 and the blazing-fast Gemini Flash API.
 
 Wherever you're typing — any app, any text field — you can select text, hit a global shortcut (`Ctrl+Alt+G`), and instantly get:
 
