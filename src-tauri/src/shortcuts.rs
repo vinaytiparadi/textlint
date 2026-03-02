@@ -170,10 +170,10 @@ fn show_panel_with_result(
 fn show_info(app: &AppHandle, message: &str, subtitle: &str, cursor: &Option<ScreenPosition>) {
     let default_cursor = ScreenPosition { x: 400, y: 400 };
     let cursor_pos = cursor.as_ref().unwrap_or(&default_cursor);
-    let pos = floating_panel::calculate_panel_position(cursor_pos, 320, 95);
+    let pos = floating_panel::calculate_panel_position(cursor_pos, 320, 120);
 
     if let Some(panel_win) = app.get_webview_window("panel") {
-        let _ = panel_win.set_size(tauri::PhysicalSize::new(320u32, 95u32));
+        let _ = panel_win.set_size(tauri::PhysicalSize::new(320u32, 120u32));
         let _ = panel_win.set_position(tauri::PhysicalPosition::new(pos.x, pos.y));
         let _ = panel_win.show();
         let _ = panel_win.set_focus();
@@ -190,10 +190,10 @@ fn show_info(app: &AppHandle, message: &str, subtitle: &str, cursor: &Option<Scr
 fn show_error(app: &AppHandle, message: &str, cursor: &Option<ScreenPosition>) {
     let default_cursor = ScreenPosition { x: 400, y: 400 };
     let cursor_pos = cursor.as_ref().unwrap_or(&default_cursor);
-    let pos = floating_panel::calculate_panel_position(cursor_pos, 340, 130);
+    let pos = floating_panel::calculate_panel_position(cursor_pos, 340, 140);
 
     if let Some(panel_win) = app.get_webview_window("panel") {
-        let _ = panel_win.set_size(tauri::PhysicalSize::new(340u32, 130u32));
+        let _ = panel_win.set_size(tauri::PhysicalSize::new(340u32, 140u32));
         let _ = panel_win.set_position(tauri::PhysicalPosition::new(pos.x, pos.y));
         let _ = panel_win.show();
         let _ = panel_win.set_focus();
