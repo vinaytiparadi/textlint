@@ -60,14 +60,4 @@ impl CorrectionResult {
             num_corrections,
         }
     }
-
-    pub fn no_changes(original_text: String) -> Self {
-        CorrectionResult {
-            original_text: original_text.clone(),
-            corrected_text: original_text,
-            has_changes: false,
-            corrections: Vec::new(),
-            num_corrections: 0,
-        }
-    }
 }
