@@ -40,6 +40,7 @@ function populateUI(settings) {
   document.getElementById('learn-mode-input').checked = settings.learn_mode;
   document.getElementById('auto-apply-input').checked = settings.auto_apply;
   document.getElementById('strictness-select').value = settings.strictness;
+  document.getElementById('enhance-writing-input').checked = settings.enhance_writing;
 
   // Appearance
   document.getElementById('floating-icon-input').checked = settings.show_floating_icon;
@@ -175,6 +176,12 @@ function setupListeners() {
   // Strictness
   document.getElementById('strictness-select').addEventListener('change', (e) => {
     currentSettings.strictness = e.target.value;
+    debouncedSave();
+  });
+
+  // Enhance Writing
+  document.getElementById('enhance-writing-input').addEventListener('change', (e) => {
+    currentSettings.enhance_writing = e.target.checked;
     debouncedSave();
   });
 

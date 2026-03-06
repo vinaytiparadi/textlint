@@ -20,6 +20,8 @@ pub struct AppSettings {
     pub auto_apply: bool,
     /// Correction strictness level
     pub strictness: Strictness,
+    /// Whether to also enhance writing quality (word choice, clarity, flow)
+    pub enhance_writing: bool,
     /// Toast notification duration in seconds
     pub toast_duration: u32,
     /// Theme preference
@@ -55,6 +57,7 @@ impl Default for AppSettings {
             show_floating_icon: true,
             auto_apply: true,
             strictness: Strictness::Balanced,
+            enhance_writing: false,
             toast_duration: 3,
             theme: Theme::System,
             launch_on_startup: true,

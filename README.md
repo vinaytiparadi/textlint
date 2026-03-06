@@ -19,6 +19,7 @@ Wherever you're typing — any app, any text field — you can select text, hit 
 - **🚀 Ultra-Fast**: Powered by Rust, Tauri, and Google's Gemini Flash API.
 - **🎯 Smart Positioning**: The correction panel magically appears right above your cursor.
 - **🧠 Learn Mode**: Don't just fix it—understand it. Get detailed explanations of your mistakes.
+- **✍️ Enhance Writing**: Go beyond grammar — improve word choice, clarity, and sentence flow with a single toggle.
 - **🎨 Fluent Design**: Gorgeous native WinUI 3 aesthetics with light/dark theme support.
 - **🎛️ App Filtering**: Easily disable TextLint in specific apps (like VS Code or Terminal).
 - **🔒 Privacy First**: Lightweight, brings-your-own-API-key model.

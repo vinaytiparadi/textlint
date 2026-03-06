@@ -7,8 +7,8 @@ use serde_json::Value;
 const GEMINI_API_URL: &str =
     "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent";
 
-/// Build the system prompt based on strictness level
-fn build_system_prompt(strictness: &Strictness) -> String {
+/// Build the system prompt based on strictness level and enhancement mode
+fn build_system_prompt(strictness: &Strictness, enhance_writing: bool) -> String {
     let strictness_instruction = match strictness {
         Strictness::Relaxed => {
             "Correction level: RELAXED. Only fix clear grammar errors and spelling mistakes. \
@@ -28,6 +28,27 @@ fn build_system_prompt(strictness: &Strictness) -> String {
         }
     };
 
+    let enhancement_instruction = if enhance_writing {
+        "\n\nWRITING ENHANCEMENT MODE IS ON. You MUST fully rewrite and elevate the text to professional, advanced-level English:\n\
+         - REWRITE sentences entirely — do not just swap individual words. Transform simple, beginner-level writing into polished, articulate prose.\n\
+         - Use sophisticated, precise vocabulary appropriate for professional communication (e.g., 'I think this is good' → 'This demonstrates considerable merit').\n\
+         - Restructure sentences for maximum impact — vary sentence length, use active voice, employ strong verbs.\n\
+         - Eliminate filler words, redundancy, and vague language.\n\
+         - Ensure the text reads as if written by a skilled, fluent English speaker — natural, confident, and compelling.\n\
+         - Preserve the author's core meaning and intent, but dramatically elevate the delivery.\n\
+         - The corrected_text MUST reflect the fully rewritten, enhanced version.\n\
+         - Tag all writing improvements (not grammar fixes) with category 'enhancement'.\n\
+         - For enhancements, briefly explain how the rewrite improves the writing."
+    } else {
+        ""
+    };
+
+    let categories = if enhance_writing {
+        r#""category": "grammar" or "spelling" or "punctuation" or "tone" or "style" or "enhancement""#
+    } else {
+        r#""category": "grammar" or "spelling" or "punctuation" or "tone" or "style""#
+    };
+
     format!(
         r#"You are TextLint, an English grammar correction assistant designed to help non-native English speakers improve their writing. Your corrections should be:
 
@@ -36,7 +57,7 @@ fn build_system_prompt(strictness: &Strictness) -> String {
 3. Educational — explanations should be clear, concise, and written for someone actively learning English (B1-C1 level).
 4. Context-aware — consider informal contexts (chat messages, texts) vs formal (emails, documents). Don't over-correct casual writing.
 
-{}
+{}{}
 
 Special rules:
 - Recognize and skip code snippets, variable names, URLs, file paths — do not correct them.
@@ -52,13 +73,13 @@ You MUST respond with ONLY valid JSON matching this exact schema, with no additi
     {{
       "original": "the exact wrong part from the original",
       "corrected": "the fixed version",
-      "category": "grammar" or "spelling" or "punctuation" or "tone" or "style",
+      {},
       "severity": "error" or "warning" or "suggestion",
       "explanation": "Clear, simple explanation of why this is wrong and the grammar rule. Written for someone learning English."
     }}
   ]
 }}"#,
-        strictness_instruction
+        strictness_instruction, enhancement_instruction, categories
     )
 }
 
@@ -96,6 +117,7 @@ pub async fn check_grammar(
     api_key: &str,
     text: &str,
     strictness: &Strictness,
+    enhance_writing: bool,
 ) -> Result<CorrectionResponse, String> {
     if api_key.is_empty() {
         return Err(
@@ -112,7 +134,7 @@ pub async fn check_grammar(
     }
 
     let client = Client::new();
-    let system_prompt = build_system_prompt(strictness);
+    let system_prompt = build_system_prompt(strictness, enhance_writing);
 
     let request_body = GeminiRequest {
         system_instruction: SystemInstruction {

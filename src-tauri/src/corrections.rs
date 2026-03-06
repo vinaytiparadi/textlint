@@ -19,6 +19,7 @@ pub enum CorrectionCategory {
     Punctuation,
     Tone,
     Style,
+    Enhancement,
 }
 
 /// Severity level of a correction

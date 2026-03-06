@@ -16,7 +16,7 @@ pub async fn handle_correction_trigger(app: &AppHandle) {
     println!("[TextLint] Cursor captured at: {:?}", cursor_position);
 
     // Read current settings
-    let (api_key, strictness, learn_mode, auto_apply, disabled_apps) = {
+    let (api_key, strictness, learn_mode, auto_apply, enhance_writing, disabled_apps) = {
         let state = app.state::<SettingsState>();
         let settings = state.0.lock().unwrap();
         (
@@ -24,6 +24,7 @@ pub async fn handle_correction_trigger(app: &AppHandle) {
             settings.strictness.clone(),
             settings.learn_mode,
             settings.auto_apply,
+            settings.enhance_writing,
             settings.disabled_apps.clone(),
         )
     };
@@ -71,21 +72,22 @@ pub async fn handle_correction_trigger(app: &AppHandle) {
 
     // Call Gemini API
     println!("[TextLint] Calling Gemini API...");
-    let response = match gemini::check_grammar(&api_key, &selected_text, &strictness).await {
-        Ok(resp) => {
-            println!(
-                "[TextLint] API response received. Has changes: {}",
-                resp.has_changes
-            );
-            resp
-        }
-        Err(e) => {
-            println!("[TextLint] ERROR: Gemini API error: {}", e);
-            clipboard::restore_clipboard(original_clipboard);
-            show_error(app, &e, &cursor_position);
-            return;
-        }
-    };
+    let response =
+        match gemini::check_grammar(&api_key, &selected_text, &strictness, enhance_writing).await {
+            Ok(resp) => {
+                println!(
+                    "[TextLint] API response received. Has changes: {}",
+                    resp.has_changes
+                );
+                resp
+            }
+            Err(e) => {
+                println!("[TextLint] ERROR: Gemini API error: {}", e);
+                clipboard::restore_clipboard(original_clipboard);
+                show_error(app, &e, &cursor_position);
+                return;
+            }
+        };
 
     let result = CorrectionResult::from_response(selected_text, response);
 
