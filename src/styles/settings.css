@@ -129,28 +129,95 @@
 }
 
 /* Disabled Apps Section */
-.disabled-apps-list {
-    max-height: 200px;
-    overflow-y: auto;
-    margin-top: var(--space-2);
+.app-search-row {
+    display: flex;
+    gap: var(--space-2);
+    margin-bottom: var(--space-2);
 }
 
-.app-item {
+.app-search-row .input {
+    flex: 1;
+}
+
+.app-search-row .btn {
+    min-width: 36px;
+    padding: 0;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.running-apps-list {
+    max-height: 260px;
+    overflow-y: auto;
+    margin: var(--space-2) 0;
+    border: 1px solid var(--color-divider);
+    border-radius: var(--radius-sm);
+}
+
+.app-toggle-item {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: var(--space-2) 0;
+    padding: var(--space-2) var(--space-3);
     border-bottom: 1px solid var(--color-divider);
+    transition: background var(--transition-fast);
 }
 
-.app-item:last-child {
+.app-toggle-item:last-child {
     border-bottom: none;
 }
 
-.app-name {
+.app-toggle-item:hover {
+    background: var(--color-bg-card-hover);
+}
+
+.app-toggle-item.blocked {
+    background: color-mix(in srgb, var(--color-error) 8%, transparent);
+}
+
+.app-toggle-info {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-width: 0;
+    flex: 1;
+}
+
+.app-toggle-info .app-name {
     font-size: var(--font-size-body);
     color: var(--color-text-primary);
     font-family: monospace;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.app-badge {
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: var(--radius-sm);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+}
+
+.app-badge.manual {
+    background: color-mix(in srgb, var(--color-text-secondary) 15%, transparent);
+    color: var(--color-text-secondary);
+}
+
+.app-badge.blocked-badge {
+    background: color-mix(in srgb, var(--color-error) 15%, transparent);
+    color: var(--color-error);
+}
+
+/* Small toggle variant for app list */
+.toggle-sm {
+    transform: scale(0.8);
+    flex-shrink: 0;
 }
 
 .add-app-row {

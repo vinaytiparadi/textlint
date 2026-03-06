@@ -78,6 +78,7 @@ pub fn run() {
             shortcuts::trigger_correction,
             shortcuts::apply_correction_text,
             app_filter::get_current_app,
+            app_filter::get_running_apps,
             floating_panel::get_panel_position,
             floating_panel::show_panel_at_cursor,
             floating_panel::hide_panel,

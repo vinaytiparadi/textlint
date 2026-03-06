@@ -51,8 +51,8 @@ function populateUI(settings) {
   // Startup
   document.getElementById('startup-input').checked = settings.launch_on_startup;
 
-  // Disabled Apps
-  renderDisabledApps(settings.disabled_apps);
+  // Disabled Apps — load running processes list
+  loadRunningApps();
 
   // Apply theme
   applyTheme(settings.theme);
@@ -98,27 +98,63 @@ function updateApiKeyStatus(key) {
 }
 
 // ===========================
-// Disabled Apps
+// Disabled Apps (Running Apps Toggle List)
 // ===========================
-function renderDisabledApps(apps) {
-  const list = document.getElementById('disabled-apps-list');
+let runningApps = [];
+let searchFilter = '';
+
+async function loadRunningApps() {
+  try {
+    runningApps = await invoke('get_running_apps');
+    renderRunningAppsList();
+  } catch (e) {
+    console.error('Failed to load running apps:', e);
+    document.getElementById('running-apps-list').innerHTML =
+      '<div class="setting-description" style="padding: 12px 0; text-align: center;">Failed to load running apps.</div>';
+  }
+}
+
+function renderRunningAppsList() {
+  const list = document.getElementById('running-apps-list');
   list.innerHTML = '';
 
-  if (apps.length === 0) {
-    list.innerHTML = '<div class="setting-description" style="padding: 8px 0;">No apps disabled. All apps will receive grammar corrections.</div>';
+  // Merge: running apps + manually added apps that aren't currently running
+  const allApps = [...new Set([...runningApps, ...currentSettings.disabled_apps])].sort();
+  const filtered = searchFilter
+    ? allApps.filter(app => app.includes(searchFilter))
+    : allApps;
+
+  if (filtered.length === 0) {
+    list.innerHTML = '<div class="setting-description" style="padding: 12px 0; text-align: center;">No matching apps found.</div>';
     return;
   }
 
-  apps.forEach((app, index) => {
+  filtered.forEach(app => {
+    const isDisabled = currentSettings.disabled_apps.includes(app);
+    const isRunning = runningApps.includes(app);
     const item = document.createElement('div');
-    item.className = 'app-item';
+    item.className = 'app-toggle-item' + (isDisabled ? ' blocked' : '');
     item.innerHTML = `
-      <span class="app-name">${escapeHtml(app)}</span>
-      <button class="btn" data-index="${index}" style="min-height:24px; padding: 2px 8px; font-size: 11px;">Remove</button>
+      <div class="app-toggle-info">
+        <span class="app-name">${escapeHtml(app)}</span>
+        ${!isRunning ? '<span class="app-badge manual">manual</span>' : ''}
+        ${isDisabled ? '<span class="app-badge blocked-badge">blocked</span>' : ''}
+      </div>
+      <label class="toggle-switch toggle-sm">
+        <input type="checkbox" ${isDisabled ? 'checked' : ''} />
+        <span class="toggle-slider"></span>
+      </label>
     `;
-    item.querySelector('button').addEventListener('click', () => {
-      currentSettings.disabled_apps.splice(index, 1);
-      renderDisabledApps(currentSettings.disabled_apps);
+    item.querySelector('input').addEventListener('change', (e) => {
+      if (e.target.checked) {
+        if (!currentSettings.disabled_apps.includes(app)) {
+          currentSettings.disabled_apps.push(app);
+        }
+      } else {
+        const idx = currentSettings.disabled_apps.indexOf(app);
+        if (idx > -1) currentSettings.disabled_apps.splice(idx, 1);
+      }
+      renderRunningAppsList();
       debouncedSave();
     });
     list.appendChild(item);
@@ -133,7 +169,7 @@ function addDisabledApp() {
   if (currentSettings.disabled_apps.includes(appName)) return;
 
   currentSettings.disabled_apps.push(appName);
-  renderDisabledApps(currentSettings.disabled_apps);
+  renderRunningAppsList();
   input.value = '';
   debouncedSave();
 }
@@ -217,6 +253,15 @@ function setupListeners() {
   document.getElementById('add-app-input').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') addDisabledApp();
   });
+
+  // Search running apps
+  document.getElementById('app-search-input').addEventListener('input', (e) => {
+    searchFilter = e.target.value.trim().toLowerCase();
+    renderRunningAppsList();
+  });
+
+  // Refresh running apps list
+  document.getElementById('refresh-apps-btn').addEventListener('click', loadRunningApps);
 }
 
 // ===========================

@@ -91,7 +91,8 @@
                 <div class="setting-row">
                     <div class="setting-info">
                         <span class="setting-label">Enhance Writing</span>
-                        <span class="setting-description">Improve word choice, clarity, and sentence flow alongside grammar fixes</span>
+                        <span class="setting-description">Improve word choice, clarity, and sentence flow alongside
+                            grammar fixes</span>
                     </div>
                     <div class="setting-control">
                         <label class="toggle-switch">
@@ -175,13 +176,26 @@
             <div class="section-title">Disabled Apps</div>
             <div class="section-card">
                 <div class="setting-description" style="padding: 4px 0 8px;">
-                    TextLint will not activate in these applications.
+                    TextLint will not activate in these applications. Toggle apps to block them.
                 </div>
-                <div class="disabled-apps-list" id="disabled-apps-list">
-                    <!-- Populated dynamically -->
+
+                <!-- Search/filter -->
+                <div class="app-search-row">
+                    <input type="text" class="input" id="app-search-input" placeholder="Search running apps..."
+                        spellcheck="false" />
+                    <button class="btn" id="refresh-apps-btn" title="Refresh list">↻</button>
                 </div>
+
+                <!-- Running apps toggle list -->
+                <div class="running-apps-list" id="running-apps-list">
+                    <div class="setting-description" style="padding: 12px 0; text-align: center;">
+                        Loading running apps...
+                    </div>
+                </div>
+
+                <!-- Manual add (for apps not currently running) -->
                 <div class="add-app-row">
-                    <input type="text" class="input" id="add-app-input" placeholder="Process name (e.g., code.exe)"
+                    <input type="text" class="input" id="add-app-input" placeholder="Add manually (e.g., code.exe)"
                         spellcheck="false" />
                     <button class="btn" id="add-app-btn">Add</button>
                 </div>

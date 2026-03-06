@@ -6,7 +6,7 @@
 
 ## What is TextLint?
 
-TextLint is a minimal, always-on Windows 11 desktop utility that lives in your system tray. Powered by Tauri v2 and the blazing-fast Gemini Flash API.
+TextLint is a minimal, always-on Windows 11 desktop utility that lives in your system tray. Powered by Tauri v2 and the blazing-fast Gemini Flash Lite API.
 
 Wherever you're typing — any app, any text field — you can select text, hit a global shortcut (`Ctrl+Alt+G`), and instantly get:
 
