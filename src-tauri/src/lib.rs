@@ -13,6 +13,8 @@ use tauri::{
     tray::TrayIconBuilder,
     Emitter, Manager,
 };
+
+pub struct PendingCorrectionState(pub Mutex<Option<String>>);
 use tauri_plugin_autostart::{MacosLauncher, ManagerExt};
 use tauri_plugin_global_shortcut::{GlobalShortcutExt, Shortcut, ShortcutState};
 
@@ -79,7 +81,7 @@ pub fn run() {
             settings::get_settings,
             settings::save_settings,
             shortcuts::trigger_correction,
-            shortcuts::apply_correction_text,
+            shortcuts::apply_current_correction,
             app_filter::get_current_app,
             app_filter::get_running_apps,
             floating_panel::get_panel_position,

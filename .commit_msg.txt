@@ -1,0 +1,24 @@
+chore: bump version to 1.0.0 and resolve security vulnerabilities
+
+Changes Made
+
+1. Missing Input Limits
+Context: Unbounded clipboard text forwarded to API risked quota exhaustion.
+Fix: Added defensive size bounds (10,000 characters and 1,500 words) in shortcuts.rs. Triggers a localized show_error popup on the user's screen if limits are exceeded.
+
+2. LLM Prompt Injection via User Text
+Context: Attackers could bypass formatting instructions using prompt manipulation.
+Fix: 
+- Prompt Hardening: Modified build_system_prompt() to denote external content as untrusted.
+- Payload Sanitization: Added sanitize_for_llm to manually strip HTML comments and anomalous control characters.
+- Output Validation Check: Put ratio heuristics directly into check_grammar() to reject verbose injection responses.
+
+3. LLM XSS via Render
+Context: The category attribute was unescaped when drawn into the UI via .innerHTML.
+Fix: Added esc() HTML escaping explicitly around cap(c.category) in panel.js.
+
+4. RCE via IPC Keystrokes
+Context: Arbitrary string exposure allowed RCE via keystroke simulation.
+Fix: 
+- Defined a PendingCorrectionState inside Tauri's backend state container.
+- Switched the IPC command route to parameterless apply_current_correction(), which safely retrieves data from backend memory.

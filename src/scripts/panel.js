@@ -48,7 +48,7 @@ window.showCorrections = function (result, learnMode = true) {
             item.innerHTML = `
         <div class="correction-top">
           <span class="badge ${sc}">${cap(c.severity)}</span>
-          <span class="text-small text-secondary">${cap(c.category || 'grammar')}</span>
+          <span class="text-small text-secondary">${esc(cap(c.category || 'grammar'))}</span>
         </div>
         <div class="correction-change">
           <span class="diff-removed">${esc(c.original)}</span>
@@ -125,7 +125,7 @@ async function applyFix() {
     // Wait for the panel to hide and focus to return before sending paste command
     setTimeout(async () => {
         try {
-            await invoke('apply_correction_text', { text: textToApply });
+            await invoke('apply_current_correction');
         } catch (e) {
             console.error('Apply fix error:', e);
         }

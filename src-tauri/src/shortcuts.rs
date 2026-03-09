@@ -70,6 +70,35 @@ pub async fn handle_correction_trigger(app: &AppHandle) {
 
     log::info!("[TextLint] Captured text ({} chars)", selected_text.len());
 
+    const MAX_TEXT_LENGTH: usize = 10_000;
+    if selected_text.len() > MAX_TEXT_LENGTH {
+        show_error(
+            app,
+            &format!(
+                "Selected text is too long ({} chars). Please select up to {} characters at a time.",
+                selected_text.len(),
+                MAX_TEXT_LENGTH
+            ),
+            &cursor_position,
+        );
+        clipboard::restore_clipboard(original_clipboard);
+        return;
+    }
+
+    let word_count = selected_text.split_whitespace().count();
+    if word_count > 1_500 {
+        show_error(
+            app,
+            &format!(
+                "Selected text is too long ({} words). Please select up to 1500 words at a time.",
+                word_count
+            ),
+            &cursor_position,
+        );
+        clipboard::restore_clipboard(original_clipboard);
+        return;
+    }
+
     // Call Gemini API
     log::debug!("[TextLint] Calling Gemini API...");
     let response =
@@ -93,6 +122,11 @@ pub async fn handle_correction_trigger(app: &AppHandle) {
 
     if result.has_changes {
         log::info!("[TextLint] {} corrections found", result.num_corrections);
+
+        // Store correction securely in backend state
+        if let Ok(mut pending) = app.state::<crate::PendingCorrectionState>().0.lock() {
+            *pending = Some(result.corrected_text.clone());
+        }
 
         if learn_mode {
             // In Learn Mode: show the panel instead of auto-pasting
@@ -228,6 +262,15 @@ pub async fn trigger_correction(app: AppHandle) {
 
 /// IPC command: apply a specific correction (from the panel)
 #[tauri::command]
-pub fn apply_correction_text(text: String) -> Result<(), String> {
-    clipboard::paste_text(&text)
+pub fn apply_current_correction(app: AppHandle) -> Result<(), String> {
+    let text_to_paste = match app.state::<crate::PendingCorrectionState>().0.lock() {
+        Ok(mut pending) => pending.take(),
+        Err(_) => None,
+    };
+
+    if let Some(text) = text_to_paste {
+        clipboard::paste_text(&text)
+    } else {
+        Err("No pending correction found to apply.".to_string())
+    }
 }
