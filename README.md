@@ -16,7 +16,7 @@ Wherever you're typing — any app, any text field — you can select text, hit 
 ## ✨ Features
 
 - **⚡ System-Wide Integration**: Works in *any* Windows application where text can be selected.
-- **🚀 Ultra-Fast**: Powered by Rust, Tauri, and Google's Gemini Flash API.
+- **🚀 Ultra-Fast**: Powered by Rust, Tauri, and Google's Gemini Flash Lite API.
 - **🎯 Smart Positioning**: The correction panel magically appears right above your cursor.
 - **🧠 Learn Mode**: Don't just fix it—understand it. Get detailed explanations of your mistakes.
 - **✍️ Enhance Writing**: Go beyond grammar — improve word choice, clarity, and sentence flow with a single toggle.
@@ -29,7 +29,7 @@ Wherever you're typing — any app, any text field — you can select text, hit 
 - **Frontend**: Vanilla TypeScript/HTML/CSS (Zero framework overhead for maximum performance)
 - **Backend / Core**: Rust
 - **Framework**: [Tauri v2](https://v2.tauri.app/)
-- **AI Engine**: Google Gemini Flash API (`gemini-flash-latest`)
+- **AI Engine**: Google Gemini Flash Lite API (`gemini-flash-lite-latest`)
 
 ## 🚀 Getting Started
 
