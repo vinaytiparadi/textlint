@@ -4,7 +4,7 @@ use crate::corrections::CorrectionResult;
 use crate::floating_panel::{self, ScreenPosition};
 use crate::gemini;
 use crate::settings::SettingsState;
-use tauri::{AppHandle, Manager};
+use tauri::{AppHandle, Emitter, Manager};
 
 /// The main correction handler — called when the global shortcut is triggered.
 /// Orchestrates: check disabled app → capture text → call API → handle result.
@@ -159,12 +159,18 @@ fn show_panel_with_result(
         let _ = panel_win.set_focus();
         let _ = panel_win.set_always_on_top(true);
 
-        // Inject data directly via eval — 100% reliable, no event timing issues
-        if let Ok(json) = serde_json::to_string(result) {
-            let js = format!("window.showCorrections({}, {})", json, learn_mode);
-            let _ = panel_win.eval(&js);
-            println!("[TextLint] Panel data injected via eval");
+        #[derive(serde::Serialize, Clone)]
+        struct CorrectionsPayload<'a> {
+            result: &'a CorrectionResult,
+            #[serde(rename = "learnMode")]
+            learn_mode: bool,
         }
+
+        let _ = panel_win.emit(
+            "show-corrections",
+            CorrectionsPayload { result, learn_mode },
+        );
+        println!("[TextLint] Panel data emitted via event");
     }
 }
 
@@ -181,10 +187,12 @@ fn show_info(app: &AppHandle, message: &str, subtitle: &str, cursor: &Option<Scr
         let _ = panel_win.set_focus();
         let _ = panel_win.set_always_on_top(true);
 
-        let msg_escaped = message.replace('\\', "\\\\").replace('"', "\\\"");
-        let sub_escaped = subtitle.replace('\\', "\\\\").replace('"', "\\\"");
-        let js = format!("window.showInfo(\"{}\", \"{}\")", msg_escaped, sub_escaped);
-        let _ = panel_win.eval(&js);
+        #[derive(serde::Serialize, Clone)]
+        struct InfoPayload<'a> {
+            message: &'a str,
+            subtitle: &'a str,
+        }
+        let _ = panel_win.emit("show-info", InfoPayload { message, subtitle });
     }
 }
 
@@ -201,9 +209,11 @@ fn show_error(app: &AppHandle, message: &str, cursor: &Option<ScreenPosition>) {
         let _ = panel_win.set_focus();
         let _ = panel_win.set_always_on_top(true);
 
-        let msg_escaped = message.replace('\\', "\\\\").replace('"', "\\\"");
-        let js = format!("window.showError(\"{}\")", msg_escaped);
-        let _ = panel_win.eval(&js);
+        #[derive(serde::Serialize, Clone)]
+        struct ErrorPayload<'a> {
+            message: &'a str,
+        }
+        let _ = panel_win.emit("show-error", ErrorPayload { message });
     }
 }
 

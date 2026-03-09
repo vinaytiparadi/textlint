@@ -153,10 +153,9 @@ pub async fn check_grammar(
         },
     };
 
-    let url = format!("{}?key={}", GEMINI_API_URL, api_key);
-
     let response = client
-        .post(&url)
+        .post(GEMINI_API_URL)
+        .header("x-goog-api-key", api_key)
         .json(&request_body)
         .send()
         .await

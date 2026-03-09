@@ -4,6 +4,7 @@
 
 const { invoke } = window.__TAURI__.core;
 const { getCurrentWindow } = window.__TAURI__.window;
+const { listen } = window.__TAURI__.event;
 
 let currentResult = null;
 let autoDismissTimer = null;
@@ -115,12 +116,12 @@ function clearAutoDismiss() {
 // ===========================
 async function applyFix() {
     if (!currentResult) return;
-    
+
     const textToApply = currentResult.corrected_text;
-    
+
     // Close panel first to restore focus to the target application
     closePanel();
-    
+
     // Wait for the panel to hide and focus to return before sending paste command
     setTimeout(async () => {
         try {
@@ -176,4 +177,22 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('dismiss-btn').addEventListener('click', closePanel);
     document.getElementById('panel-close').addEventListener('click', closePanel);
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closePanel(); });
+
+    listen('show-corrections', (event) => {
+        if (event.payload) {
+            window.showCorrections(event.payload.result, event.payload.learnMode);
+        }
+    });
+
+    listen('show-info', (event) => {
+        if (event.payload) {
+            window.showInfo(event.payload.message, event.payload.subtitle);
+        }
+    });
+
+    listen('show-error', (event) => {
+        if (event.payload) {
+            window.showError(event.payload.message);
+        }
+    });
 });
