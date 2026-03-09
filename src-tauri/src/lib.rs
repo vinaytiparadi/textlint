@@ -57,10 +57,11 @@ pub fn run() {
             setup_tray(app)?;
 
             // Register the global shortcut keybinding
-            let shortcut: Shortcut = settings
-                .shortcut
-                .parse()
-                .unwrap_or_else(|_| "CmdOrCtrl+Alt+G".parse().unwrap());
+            let shortcut: Shortcut = settings.shortcut.parse().unwrap_or_else(|_| {
+                "CmdOrCtrl+Alt+G"
+                    .parse()
+                    .expect("hardcoded fallback shortcut must be valid")
+            });
             app.global_shortcut().register(shortcut)?;
             log::info!(
                 "[TextLint] Global shortcut registered: {}",
@@ -94,7 +95,13 @@ fn setup_tray(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
     let settings_item = MenuItemBuilder::with_id("settings", "Settings").build(app)?;
     let learn_mode_item = {
         let state = app.state::<SettingsState>();
-        let settings = state.0.lock().unwrap();
+        let settings = match state.0.lock() {
+            Ok(s) => s,
+            Err(poisoned) => {
+                log::error!("[TextLint] Settings Mutex poisoned in setup_tray, recovering");
+                poisoned.into_inner()
+            }
+        };
         CheckMenuItemBuilder::with_id("learn_mode", "Learn Mode")
             .checked(settings.learn_mode)
             .build(app)?
@@ -150,7 +157,13 @@ fn open_settings_window(app: &tauri::AppHandle) {
 /// Toggle Learn Mode from the tray menu
 fn toggle_learn_mode(app: &tauri::AppHandle) {
     let state = app.state::<SettingsState>();
-    let mut settings = state.0.lock().unwrap();
+    let mut settings = match state.0.lock() {
+        Ok(s) => s,
+        Err(poisoned) => {
+            log::error!("[TextLint] Settings Mutex poisoned in toggle_learn_mode, recovering");
+            poisoned.into_inner()
+        }
+    };
     settings.learn_mode = !settings.learn_mode;
     let new_value = settings.learn_mode;
     let settings_clone = settings.clone();

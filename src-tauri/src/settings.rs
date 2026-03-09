@@ -187,7 +187,13 @@ pub fn save_settings_to_store(app: &AppHandle, settings: &AppSettings) -> Result
 /// IPC command: get current settings + api_key from keyring
 #[tauri::command]
 pub fn get_settings(state: tauri::State<'_, SettingsState>) -> AppSettingsWithKey {
-    let settings = state.0.lock().unwrap().clone();
+    let settings = match state.0.lock() {
+        Ok(s) => s.clone(),
+        Err(poisoned) => {
+            log::error!("[TextLint] Settings Mutex poisoned in get_settings, recovering");
+            poisoned.into_inner().clone()
+        }
+    };
     let api_key = load_api_key();
     AppSettingsWithKey { settings, api_key }
 }
@@ -202,7 +208,13 @@ pub fn save_settings(
 ) -> Result<(), String> {
     save_api_key(&api_key)?;
     save_settings_to_store(&app, &settings)?;
-    let mut current = state.0.lock().unwrap();
+    let mut current = match state.0.lock() {
+        Ok(s) => s,
+        Err(poisoned) => {
+            log::error!("[TextLint] Settings Mutex poisoned in save_settings, recovering");
+            poisoned.into_inner()
+        }
+    };
     *current = settings;
     Ok(())
 }

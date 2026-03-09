@@ -159,31 +159,51 @@ pub async fn check_grammar(
         .json(&request_body)
         .send()
         .await
-        .map_err(|e| format!("Network error: {}", e))?;
+        .map_err(|e| {
+            log::error!("[TextLint] Network error: {}", e);
+            "Network error occurred. Please check your connection.".to_string()
+        })?;
 
     let status = response.status();
     if !status.is_success() {
         let error_text = response.text().await.unwrap_or_default();
-        return Err(format!("Gemini API error ({}): {}", status, error_text));
+        log::error!("[TextLint] Gemini API error ({}): {}", status, error_text);
+
+        let user_message = match status.as_u16() {
+            400 => "Invalid request. Please check your text and try again.".to_string(),
+            401 | 403 => "API key invalid or expired. Please update it in Settings.".to_string(),
+            429 => "API rate limit reached. Please wait a moment and try again.".to_string(),
+            500..=599 => "Gemini service is temporarily unavailable. Try again later.".to_string(),
+            _ => format!("API error ({}). Please try again.", status.as_u16()),
+        };
+        return Err(user_message);
     }
 
-    let response_json: Value = response
-        .json()
-        .await
-        .map_err(|e| format!("Failed to parse API response: {}", e))?;
+    let response_json: Value = response.json().await.map_err(|e| {
+        log::error!("[TextLint] Failed to parse API response: {}", e);
+        "Received an invalid response from the AI model. Please try again.".to_string()
+    })?;
 
     // Extract the text content from the Gemini response
     let text_content = response_json["candidates"][0]["content"]["parts"][0]["text"]
         .as_str()
-        .ok_or("Unexpected API response structure")?;
+        .ok_or_else(|| {
+            log::error!(
+                "[TextLint] Unexpected API response structure: {:?}",
+                response_json
+            );
+            "Received an unexpected response format from the AI model.".to_string()
+        })?;
 
     // Parse the JSON content from the model's response
     let correction_response: CorrectionResponse =
         serde_json::from_str(text_content).map_err(|e| {
-            format!(
-                "Failed to parse correction JSON: {}. Raw: {}",
-                e, text_content
-            )
+            log::error!(
+                "[TextLint] Failed to parse correction JSON: {}. Raw: {}",
+                e,
+                text_content
+            );
+            "Failed to interpret the AI model's correction. Please try again.".to_string()
         })?;
 
     Ok(correction_response)

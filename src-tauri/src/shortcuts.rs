@@ -18,7 +18,15 @@ pub async fn handle_correction_trigger(app: &AppHandle) {
     // Read current settings
     let (api_key, strictness, learn_mode, auto_apply, enhance_writing, disabled_apps) = {
         let state = app.state::<SettingsState>();
-        let settings = state.0.lock().unwrap();
+        let settings = match state.0.lock() {
+            Ok(s) => s,
+            Err(poisoned) => {
+                log::error!(
+                    "[TextLint] Settings Mutex poisoned in handle_correction_trigger, recovering"
+                );
+                poisoned.into_inner()
+            }
+        };
         (
             settings::load_api_key(), // loaded from OS keyring, never from settings struct
             settings.strictness.clone(),
@@ -53,7 +61,7 @@ pub async fn handle_correction_trigger(app: &AppHandle) {
             log::error!("[TextLint] ERROR: Failed to capture text: {}", e);
             show_error(
                 app,
-                &format!("Failed to capture text: {}", e),
+                "Failed to capture text. Please try again.",
                 &cursor_position,
             );
             return;
