@@ -9,11 +9,11 @@ use tauri::{AppHandle, Emitter, Manager};
 /// The main correction handler — called when the global shortcut is triggered.
 /// Orchestrates: check disabled app → capture text → call API → handle result.
 pub async fn handle_correction_trigger(app: &AppHandle) {
-    println!("[TextLint] Correction trigger started...");
+    log::debug!("[TextLint] Correction trigger started...");
 
     // IMMEDIATELY capture cursor position before anything else
     let cursor_position = floating_panel::get_cursor_position();
-    println!("[TextLint] Cursor captured at: {:?}", cursor_position);
+    log::debug!("[TextLint] Cursor captured at: {:?}", cursor_position);
 
     // Read current settings
     let (api_key, strictness, learn_mode, auto_apply, enhance_writing, disabled_apps) = {
@@ -31,26 +31,26 @@ pub async fn handle_correction_trigger(app: &AppHandle) {
 
     // Check if API key is set
     if api_key.is_empty() {
-        println!("[TextLint] ERROR: No API key configured!");
+        log::error!("[TextLint] ERROR: No API key configured!");
         show_error(app, "API key not configured. Right-click the tray icon → Settings to add your Gemini API key.", &cursor_position);
         return;
     }
 
     // Check if current app is disabled
     if app_filter::is_app_disabled(&disabled_apps) {
-        println!("[TextLint] Skipped: foreground app is in disabled list");
+        log::info!("[TextLint] Skipped: foreground app is in disabled list");
         return;
     }
 
     let foreground = app_filter::get_foreground_app().unwrap_or_default();
-    println!("[TextLint] Foreground app: {}", foreground);
+    log::info!("[TextLint] Foreground app: {}", foreground);
 
     // Capture selected text via clipboard
-    println!("[TextLint] Capturing selected text...");
+    log::debug!("[TextLint] Capturing selected text...");
     let (selected_text, original_clipboard) = match clipboard::capture_selected_text() {
         Ok(result) => result,
         Err(e) => {
-            println!("[TextLint] ERROR: Failed to capture text: {}", e);
+            log::error!("[TextLint] ERROR: Failed to capture text: {}", e);
             show_error(
                 app,
                 &format!("Failed to capture text: {}", e),
@@ -60,29 +60,21 @@ pub async fn handle_correction_trigger(app: &AppHandle) {
         }
     };
 
-    println!(
-        "[TextLint] Captured text ({} chars): \"{}\"",
-        selected_text.len(),
-        if selected_text.len() > 80 {
-            &selected_text[..80]
-        } else {
-            &selected_text
-        }
-    );
+    log::info!("[TextLint] Captured text ({} chars)", selected_text.len());
 
     // Call Gemini API
-    println!("[TextLint] Calling Gemini API...");
+    log::debug!("[TextLint] Calling Gemini API...");
     let response =
         match gemini::check_grammar(&api_key, &selected_text, &strictness, enhance_writing).await {
             Ok(resp) => {
-                println!(
+                log::debug!(
                     "[TextLint] API response received. Has changes: {}",
                     resp.has_changes
                 );
                 resp
             }
             Err(e) => {
-                println!("[TextLint] ERROR: Gemini API error: {}", e);
+                log::error!("[TextLint] ERROR: Gemini API error: {}", e);
                 clipboard::restore_clipboard(original_clipboard);
                 show_error(app, &e, &cursor_position);
                 return;
@@ -92,23 +84,23 @@ pub async fn handle_correction_trigger(app: &AppHandle) {
     let result = CorrectionResult::from_response(selected_text, response);
 
     if result.has_changes {
-        println!("[TextLint] {} corrections found", result.num_corrections);
+        log::info!("[TextLint] {} corrections found", result.num_corrections);
 
         if learn_mode {
             // In Learn Mode: show the panel instead of auto-pasting
-            println!("[TextLint] Learn Mode ON: showing panel");
+            log::debug!("[TextLint] Learn Mode ON: showing panel");
             clipboard::restore_clipboard(original_clipboard);
             show_panel_with_result(app, &result, &cursor_position, true);
         } else if auto_apply {
             // Auto-apply: paste corrected text
-            println!("[TextLint] Auto-applying correction...");
+            log::debug!("[TextLint] Auto-applying correction...");
             if let Err(e) = clipboard::apply_correction(&result.corrected_text, original_clipboard)
             {
-                println!("[TextLint] ERROR: Failed to apply correction: {}", e);
+                log::error!("[TextLint] ERROR: Failed to apply correction: {}", e);
                 show_error(app, &e, &cursor_position);
                 return;
             }
-            println!("[TextLint] Correction applied successfully");
+            log::info!("[TextLint] Correction applied successfully");
             // Just replaced the text, no explanation needed (Learn Mode OFF)
             show_info(
                 app,
@@ -127,7 +119,7 @@ pub async fn handle_correction_trigger(app: &AppHandle) {
         }
     } else {
         // No changes needed
-        println!("[TextLint] No corrections needed - text looks good!");
+        log::info!("[TextLint] No corrections needed - text looks good!");
         clipboard::restore_clipboard(original_clipboard);
         show_info(app, "Looks good!", "No changes needed.", &cursor_position);
     }
@@ -145,9 +137,12 @@ fn show_panel_with_result(
     let height = std::cmp::min(400, 180 + (result.num_corrections * 60) as i32);
     let pos = floating_panel::calculate_panel_position(cursor_pos, 360, height);
 
-    println!(
+    log::debug!(
         "[TextLint] Panel positioned at ({},{}) for cursor ({},{})",
-        pos.x, pos.y, cursor_pos.x, cursor_pos.y
+        pos.x,
+        pos.y,
+        cursor_pos.x,
+        cursor_pos.y
     );
 
     if let Some(panel_win) = app.get_webview_window("panel") {
@@ -170,7 +165,7 @@ fn show_panel_with_result(
             "show-corrections",
             CorrectionsPayload { result, learn_mode },
         );
-        println!("[TextLint] Panel data emitted via event");
+        log::debug!("[TextLint] Panel data emitted via event");
     }
 }
 

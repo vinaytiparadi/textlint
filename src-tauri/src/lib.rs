@@ -18,6 +18,8 @@ use tauri_plugin_global_shortcut::{GlobalShortcutExt, Shortcut, ShortcutState};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    env_logger::init();
+
     tauri::Builder::default()
         .plugin(tauri_plugin_store::Builder::default().build())
         .plugin(tauri_plugin_autostart::init(
@@ -28,7 +30,7 @@ pub fn run() {
             tauri_plugin_global_shortcut::Builder::new()
                 .with_handler(move |app, _shortcut, event| {
                     if event.state() == ShortcutState::Pressed {
-                        println!("[TextLint] Shortcut triggered!");
+                        log::debug!("[TextLint] Shortcut triggered!");
                         let app_handle = app.clone();
                         tauri::async_runtime::spawn(async move {
                             shortcuts::handle_correction_trigger(&app_handle).await;
@@ -43,7 +45,7 @@ pub fn run() {
 
             // Load settings
             let settings = load_settings(&app.handle());
-            println!(
+            log::info!(
                 "[TextLint] Settings loaded. API key set: {}",
                 !settings.api_key.is_empty()
             );
@@ -60,7 +62,7 @@ pub fn run() {
                 .parse()
                 .unwrap_or_else(|_| "CmdOrCtrl+Alt+G".parse().unwrap());
             app.global_shortcut().register(shortcut)?;
-            println!(
+            log::info!(
                 "[TextLint] Global shortcut registered: {}",
                 settings.shortcut
             );
@@ -68,7 +70,7 @@ pub fn run() {
             // Create the panel window (hidden initially)
             create_panel_window(app)?;
 
-            println!("[TextLint] App started successfully. Waiting in system tray...");
+            log::info!("[TextLint] App started successfully. Waiting in system tray...");
 
             Ok(())
         })
@@ -159,7 +161,7 @@ fn toggle_learn_mode(app: &tauri::AppHandle) {
 
     // Notify frontend
     let _ = app.emit("learn-mode-changed", new_value);
-    println!("[TextLint] Learn Mode toggled: {}", new_value);
+    log::info!("[TextLint] Learn Mode toggled: {}", new_value);
 }
 
 /// Create the floating panel window (hidden initially)
