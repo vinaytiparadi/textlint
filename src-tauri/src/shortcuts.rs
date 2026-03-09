@@ -3,7 +3,7 @@ use crate::clipboard;
 use crate::corrections::CorrectionResult;
 use crate::floating_panel::{self, ScreenPosition};
 use crate::gemini;
-use crate::settings::SettingsState;
+use crate::settings::{self, SettingsState};
 use tauri::{AppHandle, Emitter, Manager};
 
 /// The main correction handler — called when the global shortcut is triggered.
@@ -20,7 +20,7 @@ pub async fn handle_correction_trigger(app: &AppHandle) {
         let state = app.state::<SettingsState>();
         let settings = state.0.lock().unwrap();
         (
-            settings.api_key.clone(),
+            settings::load_api_key(), // loaded from OS keyring, never from settings struct
             settings.strictness.clone(),
             settings.learn_mode,
             settings.auto_apply,

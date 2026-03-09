@@ -68,6 +68,12 @@
     letter-spacing: 1px;
 }
 
+/* Hide the browser's native password reveal button (Edge/Chrome) — we have our own */
+.api-key-field .input::-ms-reveal,
+.api-key-field .input::-ms-clear {
+    display: none;
+}
+
 .api-key-toggle {
     display: flex;
     align-items: center;

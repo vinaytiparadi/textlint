@@ -6,7 +6,7 @@ mod gemini;
 mod settings;
 mod shortcuts;
 
-use settings::{load_settings, SettingsState};
+use settings::{load_api_key, load_settings, SettingsState};
 use std::sync::Mutex;
 use tauri::{
     menu::{CheckMenuItemBuilder, MenuBuilder, MenuItemBuilder},
@@ -47,7 +47,7 @@ pub fn run() {
             let settings = load_settings(&app.handle());
             log::info!(
                 "[TextLint] Settings loaded. API key set: {}",
-                !settings.api_key.is_empty()
+                !load_api_key().is_empty()
             );
 
             // Store settings in app state

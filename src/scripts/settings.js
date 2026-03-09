@@ -5,6 +5,7 @@ const { invoke } = window.__TAURI__.core;
 const { listen } = window.__TAURI__.event;
 
 let currentSettings = null;
+let currentApiKey = '';
 let saveTimeout = null;
 
 // ===========================
@@ -24,17 +25,22 @@ function applyTheme(theme) {
 // ===========================
 async function loadSettings() {
   try {
-    currentSettings = await invoke('get_settings');
-    populateUI(currentSettings);
+    const result = await invoke('get_settings');
+    // api_key comes back from keyring via the flattened response
+    currentApiKey = result.api_key || '';
+    // The rest of the fields map directly to AppSettings
+    const { api_key: _ignored, ...settings } = result;
+    currentSettings = settings;
+    populateUI(currentSettings, currentApiKey);
   } catch (e) {
     console.error('Failed to load settings:', e);
   }
 }
 
-function populateUI(settings) {
+function populateUI(settings, apiKey) {
   // API Key
-  document.getElementById('api-key-input').value = settings.api_key || '';
-  updateApiKeyStatus(settings.api_key);
+  document.getElementById('api-key-input').value = apiKey || '';
+  updateApiKeyStatus(apiKey);
 
   // Correction Behavior
   document.getElementById('learn-mode-input').checked = settings.learn_mode;
@@ -62,10 +68,17 @@ async function saveSettings() {
   if (!currentSettings) return;
 
   try {
-    await invoke('save_settings', { settings: currentSettings });
+    console.log('[TextLint] Saving settings, apiKey length:', currentApiKey.length);
+    await invoke('save_settings', { settings: currentSettings, apiKey: currentApiKey });
     showSaveIndicator();
   } catch (e) {
     console.error('Failed to save settings:', e);
+    // Show error visibly in the page
+    const status = document.getElementById('api-key-status');
+    if (status) {
+      status.className = 'api-key-status invalid';
+      status.textContent = '✗ Save failed: ' + e;
+    }
   }
 }
 
@@ -180,7 +193,7 @@ function addDisabledApp() {
 function setupListeners() {
   // API Key
   document.getElementById('api-key-input').addEventListener('input', (e) => {
-    currentSettings.api_key = e.target.value;
+    currentApiKey = e.target.value;
     updateApiKeyStatus(e.target.value);
     debouncedSave();
   });
