@@ -54,6 +54,7 @@ pub fn run() {
 
             // Store settings in app state
             app.manage(SettingsState(Mutex::new(settings.clone())));
+            app.manage(PendingCorrectionState(Mutex::new(None)));
 
             // Set up system tray
             setup_tray(app)?;

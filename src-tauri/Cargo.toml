@@ -1,6 +1,6 @@
 [package]
 name = "textlint"
-version = "1.0.0"
+version = "1.0.1"
 description = "An OS-wide, AI-powered grammar correction tool for Windows 11"
 authors = ["TextLint"]
 edition = "2021"
